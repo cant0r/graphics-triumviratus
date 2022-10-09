@@ -248,11 +248,11 @@ int main(int argc, char** argv)
 	glfwSetCursorPosCallback(window, cursorPosCallback);
 	glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
+
 	if (glewInit() != GLEW_OK)
 		exit(EXIT_FAILURE);
 
 	glfwSwapInterval(1);
-	glfwSetWindowSizeLimits(window, 400, 400, 800, 800);
 	glfwSetWindowAspectRatio(window, 1, 1);
 
 	init(window,vertexes);
