@@ -8,21 +8,20 @@
 #include "ObjectFile.h"
 #include "ObjectFileReader.h"
 
-/* Vertex buffer objektumok és vertex array objektum az adattároláshoz. */
-/* Vertex buffer object IDs and vertex array object ID for data storing.*/
-#define		numVBOs			2
+#define		numVBOs			1
 #define		numVAOs			1
 GLuint		VBO[numVBOs];
 GLuint		VAO[numVAOs];
 
-int			window_width = 600;
-int			window_height = 600;
+int			window_width = 800;
+int			window_height = 800;
 char		window_title[] = "Subdivision";
-/** A normál billentyûk a [0..255] tartományban vannak, a nyilak és a speciális billentyûk pedig a [256..511] tartományban helyezkednek el. */
-/** Normal keys are fom [0..255], arrow and special keys are from [256..511]. */
+
 GLboolean	keyboard[512] = { GL_FALSE };
 GLFWwindow* window = nullptr;
 GLuint		renderingProgram;
+
+int readEntries = 0;
 
 
 bool checkOpenGLError() 
@@ -144,13 +143,23 @@ GLuint createShaderProgram()
 	return vfProgram;
 }
 
-void init(GLFWwindow* window) 
+void init(GLFWwindow* window, std::vector<glm::vec3>& coords) 
 {
 	renderingProgram = createShaderProgram();
 
 	glGenBuffers(numVBOs, VBO);
 	glGenVertexArrays(numVAOs, VAO);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+	glBufferData(GL_ARRAY_BUFFER, coords.size() * sizeof(glm::vec3), coords.data(), GL_STATIC_DRAW);
 
+	glBindVertexArray(VAO[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glUseProgram(renderingProgram);
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -159,6 +168,9 @@ void init(GLFWwindow* window)
 void display(GLFWwindow* window, double currentTime) 
 {
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	glBindVertexArray(VAO[0]);
+	glDrawArrays(GL_TRIANGLES, 0, readEntries);
 
 	glBindVertexArray(0);
 }
@@ -208,19 +220,25 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
+	std::cout << argv[1] << std::endl;
+
 	ObjectFileReader objFileReader;
 	ObjectFile objFile = objFileReader.parseObjFile(argv[1]);
 
 	std::vector<glm::vec3> vertexes = objFile.getTriangleVertexes();
+	readEntries = vertexes.size();
 
-	
+	for (int i = 0; i < readEntries; i++)
+	{
+		std::cout << "Coord: " << vertexes[i].x << ", " << vertexes[i].y << ", " << vertexes[i].z << std::endl;
+	}
 
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make macOS happy; should not be needed.
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make macOS happy; should not be needed otherwise.
 	window = glfwCreateWindow(window_width, window_height, window_title, nullptr, nullptr);
 
 	glfwMakeContextCurrent(window);
@@ -237,7 +255,7 @@ int main(int argc, char** argv)
 	glfwSetWindowSizeLimits(window, 400, 400, 800, 800);
 	glfwSetWindowAspectRatio(window, 1, 1);
 
-	init(window);
+	init(window,vertexes);
 
 	while (!glfwWindowShouldClose(window)) 
 	{
