@@ -133,6 +133,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ObjectFile.cpp" />
+    <ClCompile Include="ObjectFileReader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\OpenGLTemplate\glew32.dll">
@@ -140,6 +142,10 @@
     </CopyFileToFolders>
     <None Include="fragmentShader.glsl" />
     <None Include="vertexShader.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ObjectFile.h" />
+    <ClInclude Include="ObjectFileReader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
