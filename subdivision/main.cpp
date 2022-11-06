@@ -2,7 +2,7 @@
 #include <fstream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 #include <iostream>
 #include <string>
 #include "ObjectFile.h"
@@ -22,6 +22,24 @@ GLFWwindow* window = nullptr;
 GLuint		renderingProgram;
 
 int readEntries = 0;
+
+unsigned int	modelLoc;
+unsigned int	viewLoc;
+unsigned int	projectionLoc;
+unsigned int	invTMatrixLoc;
+
+GLfloat			cameraRange = 8.0f;
+GLfloat			angle = 0.0f;
+
+glm::mat4		model, view, projection = glm::perspective(glm::radians(45.0f), (float)window_width / (float)window_height, 0.1f, 100.0f);
+glm::mat4		invTmatrix, rotateM, scaleM, translateM;
+
+GLdouble		currentTime, deltaTime, lastTime = 0.0f;
+GLfloat			cameraSpeed;
+
+glm::vec3		cameraPos = glm::vec3(0.0f, 0.0f, cameraRange),
+cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f),
+cameraUpVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
 
 bool checkOpenGLError() 
@@ -143,6 +161,16 @@ GLuint createShaderProgram()
 	return vfProgram;
 }
 
+void computeModelMatrix() {
+	model = glm::mat4(1.0f);
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+}
+
+void computeCameraMatrix() {
+	view = glm::lookAt(cameraPos, cameraTarget, cameraUpVector);
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+}
+
 void init(GLFWwindow* window, std::vector<glm::vec3>& coords) 
 {
 	renderingProgram = createShaderProgram();
@@ -162,6 +190,12 @@ void init(GLFWwindow* window, std::vector<glm::vec3>& coords)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glUseProgram(renderingProgram);
 
+	modelLoc = glGetUniformLocation(renderingProgram, "model");
+	viewLoc = glGetUniformLocation(renderingProgram, "view");
+	projectionLoc = glGetUniformLocation(renderingProgram, "projection");
+	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+	invTMatrixLoc = glGetUniformLocation(renderingProgram, "invTMatrix");
+
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 }
 
@@ -169,6 +203,42 @@ void display(GLFWwindow* window, double currentTime)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	currentTime = glfwGetTime();
+	deltaTime = currentTime - lastTime;
+	lastTime = currentTime;
+	cameraSpeed = 2.5f * (GLfloat)deltaTime;
+
+	if ((keyboard[GLFW_KEY_W]) || (keyboard[GLFW_KEY_UP])) {
+		cameraPos[1] += cameraSpeed * 1.0f;
+		cameraTarget[1] = cameraPos[1];
+	}
+
+	if ((keyboard[GLFW_KEY_S]) || (keyboard[GLFW_KEY_DOWN])) {
+		cameraPos[1] -= cameraSpeed * 1.0f;
+		cameraTarget[1] = cameraPos[1];
+	}
+
+	if ((keyboard[GLFW_KEY_D]) || (keyboard[GLFW_KEY_RIGHT])) {
+		angle += 1.0f;
+		cameraPos[0] = cameraRange * glm::sin(glm::radians(angle));
+		cameraPos[2] = cameraRange * glm::cos(glm::radians(angle));
+	}
+
+
+	if ((keyboard[GLFW_KEY_A]) || (keyboard[GLFW_KEY_LEFT])) {
+		angle -= 1.0f;
+		cameraPos[0] = cameraRange * glm::sin(glm::radians(angle));
+		cameraPos[2] = cameraRange * glm::cos(glm::radians(angle));
+	}
+
+	glUseProgram(renderingProgram);
+
+	computeModelMatrix();
+	computeCameraMatrix();
+
+	invTmatrix = glm::inverseTranspose(view * model);
+	glUniformMatrix4fv(invTMatrixLoc, 1, GL_FALSE, glm::value_ptr(invTmatrix));
+	
 	glBindVertexArray(VAO[0]);
 	glDrawArrays(GL_TRIANGLES, 0, readEntries);
 
