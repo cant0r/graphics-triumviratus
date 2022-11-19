@@ -7,6 +7,7 @@
 #include <string>
 #include "ObjectFile.h"
 #include "ObjectFileReader.h"
+#include "WingedEdge.h"
 
 #define		numVBOs			1
 #define		numVAOs			1
@@ -299,6 +300,9 @@ int main(int argc, char** argv)
 	readEntries = vertexes.size();
 
 	std::cout << "Read entries: #" << readEntries << std::endl;
+
+	WingedEdge we;
+	we.loadModel(objFile.getTriangleVertexes(), objFile.getFaceVertexes());
 
 	if (!glfwInit())
 		exit(EXIT_FAILURE);

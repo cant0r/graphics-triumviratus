@@ -54,6 +54,7 @@ ObjectFile ObjectFileReader::parseObjFile(std::string pathToObjectFile)
 
 					if (indexes.size() == 3)
 					{
+						objectFile.addFaceVertex(glm::ivec3(indexes[0], indexes[1], indexes[2]));
 						for (int i = 0; i < indexes.size(); i++)
 						{							
 							objectFile.addTriangleVertex(_vertices[indexes[i]]);

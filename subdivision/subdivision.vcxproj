@@ -108,6 +108,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,6 +140,7 @@
     <ClCompile Include="ObjectFile.cpp" />
     <ClCompile Include="ObjectFileReader.cpp" />
     <ClCompile Include="Vertex.cpp" />
+    <ClCompile Include="WingedEdge.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\OpenGLTemplate\glew32.dll">
@@ -159,6 +161,7 @@
     <ClInclude Include="ObjectFile.h" />
     <ClInclude Include="ObjectFileReader.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="WingedEdge.h" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\example_obj_files\cow-nonormals.obj">
