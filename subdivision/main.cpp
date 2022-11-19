@@ -31,7 +31,7 @@ unsigned int	invTMatrixLoc;
 GLfloat			cameraRange = 8.0f;
 GLfloat			angle = 0.0f;
 
-glm::mat4		model, view, projection = glm::perspective(glm::radians(45.0f), (float)window_width / (float)window_height, 0.1f, 100.0f);
+glm::mat4		model, view, projection = glm::perspective(glm::radians(85.0f), (float)window_width / (float)window_height, 0.1f, 100.0f);
 glm::mat4		invTmatrix, rotateM, scaleM, translateM;
 
 GLdouble		currentTime, deltaTime, lastTime = 0.0f;
@@ -298,10 +298,7 @@ int main(int argc, char** argv)
 	std::vector<glm::vec3> vertexes = objFile.getTriangleVertexes();
 	readEntries = vertexes.size();
 
-	for (int i = 0; i < readEntries; i++)
-	{
-		std::cout << "Coord: " << vertexes[i].x << ", " << vertexes[i].y << ", " << vertexes[i].z << std::endl;
-	}
+	std::cout << "Read entries: #" << readEntries << std::endl;
 
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
