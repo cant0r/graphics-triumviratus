@@ -1,5 +1,4 @@
 #include "Vertex.h"
-#include "Edge.h"
 
 void Vertex::setEdge(Edge* nEdge) {
     mEdge = nEdge;
