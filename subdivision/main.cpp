@@ -8,6 +8,7 @@
 #include "ObjectFile.h"
 #include "ObjectFileReader.h"
 #include "WingedEdge.h"
+#include "LoopSubdivision.h"
 
 #define		numVBOs			1
 #define		numVAOs			1
@@ -29,7 +30,7 @@ unsigned int	viewLoc;
 unsigned int	projectionLoc;
 unsigned int	invTMatrixLoc;
 
-GLfloat			cameraRange = 8.0f;
+GLfloat			cameraRange = 1.0f;
 GLfloat			angle = 0.0f;
 
 glm::mat4		model, view, projection = glm::perspective(glm::radians(85.0f), (float)window_width / (float)window_height, 0.1f, 100.0f);
@@ -42,6 +43,10 @@ glm::vec3		cameraPos = glm::vec3(0.0f, 0.0f, cameraRange),
 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f),
 cameraUpVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
+WingedEdge		initial_we, actual_we, next_we;
+
+
+std::vector<glm::vec3> vertexes;
 
 bool checkOpenGLError() 
 {
@@ -172,7 +177,7 @@ void computeCameraMatrix() {
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 }
 
-void init(GLFWwindow* window, std::vector<glm::vec3>& coords) 
+void init(GLFWwindow* window)
 {
 	renderingProgram = createShaderProgram();
 
@@ -180,7 +185,7 @@ void init(GLFWwindow* window, std::vector<glm::vec3>& coords)
 	glGenVertexArrays(numVAOs, VAO);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, coords.size() * sizeof(glm::vec3), coords.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertexes.size() * sizeof(glm::vec3), vertexes.data(), GL_STATIC_DRAW);
 
 	glBindVertexArray(VAO[0]);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -196,6 +201,9 @@ void init(GLFWwindow* window, std::vector<glm::vec3>& coords)
 	projectionLoc = glGetUniformLocation(renderingProgram, "projection");
 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 	invTMatrixLoc = glGetUniformLocation(renderingProgram, "invTMatrix");
+
+	actual_we = initial_we;
+	next_we = initial_we;
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 }
@@ -232,6 +240,23 @@ void display(GLFWwindow* window, double currentTime)
 		cameraPos[2] = cameraRange * glm::cos(glm::radians(angle));
 	}
 
+	if ((keyboard[GLFW_KEY_K]) ) {
+		Subdivision::loopSubdivision(&next_we, &actual_we, false, true);
+		
+		actual_we = next_we;
+		readEntries = next_we.getVertexCount();
+		std::cout << "readEntries: " << readEntries << std::endl;
+		std::vector<glm::vec3> new_vertices(readEntries);
+
+		for (int i = 0; i < readEntries; i++) {
+			new_vertices[i] = next_we.getVertices()[i].getPosition();
+		}
+		vertexes = new_vertices;
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+		glBufferData(GL_ARRAY_BUFFER, vertexes.size() * sizeof(glm::vec3), vertexes.data(), GL_STATIC_DRAW);
+	}
+
 	glUseProgram(renderingProgram);
 
 	computeModelMatrix();
@@ -241,7 +266,7 @@ void display(GLFWwindow* window, double currentTime)
 	glUniformMatrix4fv(invTMatrixLoc, 1, GL_FALSE, glm::value_ptr(invTmatrix));
 	
 	glBindVertexArray(VAO[0]);
-	glDrawArrays(GL_TRIANGLES, 0, readEntries);
+	glDrawArrays(GL_LINES, 0, readEntries);
 
 	glBindVertexArray(0);
 }
@@ -296,13 +321,12 @@ int main(int argc, char** argv)
 	ObjectFileReader objFileReader;
 	ObjectFile objFile = objFileReader.parseObjFile(argv[1]);
 
-	std::vector<glm::vec3> vertexes = objFile.getTriangleVertexes();
+	vertexes = objFile.getTriangleVertexes();
 	readEntries = vertexes.size();
 
 	std::cout << "Read entries: #" << readEntries << std::endl;
 
-	WingedEdge we;
-	we.loadModel(objFile.getTriangleVertexes(), objFile.getFaceVertexes());
+	initial_we.loadModel(objFile.getTriangleVertexes(), objFile.getFaceVertexes());
 
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
@@ -326,7 +350,7 @@ int main(int argc, char** argv)
 	glfwSwapInterval(1);
 	glfwSetWindowAspectRatio(window, 1, 1);
 
-	init(window,vertexes);
+	init(window);
 
 	while (!glfwWindowShouldClose(window)) 
 	{

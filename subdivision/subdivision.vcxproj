@@ -136,6 +136,7 @@
   <ItemGroup>
     <ClCompile Include="Edge.cpp" />
     <ClCompile Include="Face.cpp" />
+    <ClCompile Include="LoopSubdivision.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectFile.cpp" />
     <ClCompile Include="ObjectFileReader.cpp" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="Edge.h" />
     <ClInclude Include="Face.h" />
+    <ClInclude Include="LoopSubdivision.h" />
     <ClInclude Include="ObjectFile.h" />
     <ClInclude Include="ObjectFileReader.h" />
     <ClInclude Include="Vertex.h" />
