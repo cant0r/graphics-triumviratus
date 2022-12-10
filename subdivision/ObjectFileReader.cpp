@@ -49,15 +49,14 @@ ObjectFile ObjectFileReader::parseObjFile(std::string pathToObjectFile)
 				std::vector<int> indexes;
 				while (std::getline(sstream, splitPart, ' '))
 				{
-					int coord = std::stoi(splitPart) - 1;
+					int coord = std::stoi(splitPart);
 					indexes.push_back(coord);
 
 					if (indexes.size() == 3)
 					{
-						objectFile.addFaceVertex(glm::ivec3(indexes[0], indexes[1], indexes[2]));
 						for (int i = 0; i < indexes.size(); i++)
 						{							
-							objectFile.addTriangleVertex(_vertices[indexes[i]]);
+							objectFile.addTriangleVertex(_vertices[indexes[i]-1]);
 						}
 					}
 					
