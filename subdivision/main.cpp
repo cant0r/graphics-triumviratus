@@ -298,10 +298,7 @@ int main(int argc, char** argv)
 	std::vector<glm::vec3> vertexes = objFile.getTriangleVertexes();
 	readEntries = vertexes.size();
 
-	for (int i = 0; i < readEntries; i++)
-	{
-		std::cout << "Coord: " << vertexes[i].x << ", " << vertexes[i].y << ", " << vertexes[i].z << std::endl;
-	}
+	std::cout << "Read entries: #" << readEntries << std::endl;
 
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
