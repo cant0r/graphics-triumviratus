@@ -36,9 +36,6 @@
     <ClCompile Include="WingedEdge.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LoopSubdivision.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\OpenGLTemplate\glew32.dll">
@@ -74,9 +71,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WingedEdge.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LoopSubdivision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
