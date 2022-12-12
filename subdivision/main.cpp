@@ -8,7 +8,7 @@
 #include "ObjectFile.h"
 #include "ObjectFileReader.h"
 
-#define		numVBOs			1
+#define		numVBOs			2
 #define		numVAOs			1
 GLuint		VBO[numVBOs];
 GLuint		VAO[numVAOs];
@@ -40,6 +40,8 @@ GLfloat			cameraSpeed;
 glm::vec3		cameraPos = glm::vec3(0.0f, 0.0f, cameraRange),
 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f),
 cameraUpVector = glm::vec3(0.0f, 1.0f, 0.0f);
+
+std::vector<glm::vec3> object_colors, object_point_colors;
 
 
 bool checkOpenGLError() 
@@ -185,6 +187,13 @@ void init(GLFWwindow* window, std::vector<glm::vec3>& coords)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+	object_colors.resize(coords.size());
+	std::fill(object_colors.begin(), object_colors.end(), glm::vec3(0.0f, 1.0f, 1.0f));
+	glBufferData(GL_ARRAY_BUFFER, object_colors.size() * sizeof(glm::vec3), object_colors.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
