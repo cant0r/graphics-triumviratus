@@ -190,7 +190,9 @@ void init(GLFWwindow* window, std::vector<glm::vec3>& coords)
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
 	object_colors.resize(coords.size());
-	std::fill(object_colors.begin(), object_colors.end(), glm::vec3(0.0f, 1.0f, 1.0f));
+	object_point_colors.resize(coords.size());
+	std::fill(object_colors.begin(), object_colors.end(), glm::vec3(0.5f, 0.5f, 0.5f));
+	std::fill(object_point_colors.begin(), object_point_colors.end(), glm::vec3(1.0f, 0.0f, 0.0f));
 	glBufferData(GL_ARRAY_BUFFER, object_colors.size() * sizeof(glm::vec3), object_colors.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
@@ -249,7 +251,16 @@ void display(GLFWwindow* window, double currentTime)
 	glUniformMatrix4fv(invTMatrixLoc, 1, GL_FALSE, glm::value_ptr(invTmatrix));
 	
 	glBindVertexArray(VAO[0]);
-	glDrawArrays(GL_TRIANGLES, 0, readEntries);
+
+	glPointSize(10);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+	glBufferData(GL_ARRAY_BUFFER, object_point_colors.size() * sizeof(glm::vec3), object_point_colors.data(), GL_STATIC_DRAW);
+	glDrawArrays(GL_POINTS, 0, readEntries);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+	glBufferData(GL_ARRAY_BUFFER, object_colors.size() * sizeof(glm::vec3), object_colors.data(), GL_STATIC_DRAW);
+	glDrawArrays(GL_TRIANGLES, 0, readEntries);	
 
 	glBindVertexArray(0);
 }
