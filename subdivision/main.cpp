@@ -21,6 +21,8 @@ GLboolean	keyboard[512] = { GL_FALSE };
 GLFWwindow* window = nullptr;
 GLuint		renderingProgram;
 
+int readVertexEntries = 0;
+int readFaceEntries = 0;
 int readEntries = 0;
 
 unsigned int	modelLoc;
@@ -260,7 +262,7 @@ void display(GLFWwindow* window, double currentTime)
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
 	glBufferData(GL_ARRAY_BUFFER, object_colors.size() * sizeof(glm::vec3), object_colors.data(), GL_STATIC_DRAW);
-	glDrawArrays(GL_TRIANGLES, 0, readEntries);	
+	glDrawArrays(GL_TRIANGLES, 0, readEntries);
 
 	glBindVertexArray(0);
 }
@@ -318,7 +320,14 @@ int main(int argc, char** argv)
 	std::vector<glm::vec3> vertexes = objFile.getTriangleVertexes();
 	readEntries = vertexes.size();
 
-	std::cout << "Read entries: " << readEntries << std::endl;
+	std::vector<glm::vec3> rawVertexes = objFile.getRawVertexes();
+	readVertexEntries = rawVertexes.size();
+	
+	std::vector<glm::vec3> faces = objFile.getFaces();
+	readFaceEntries = faces.size();
+
+	std::cout << "Read vertexes: " << readVertexEntries << std::endl;
+	std::cout << "Read faces: " << readFaceEntries << std::endl;
 
 	if (!glfwInit())
 		exit(EXIT_FAILURE);

@@ -37,6 +37,7 @@ ObjectFile ObjectFileReader::parseObjFile(std::string pathToObjectFile)
 					{
 						glm::vec3 vertex = glm::vec3(coords[0], coords[1], coords[2]);
 						_vertices.push_back(vertex);
+						objectFile.addRawVertex(vertex);
 					}
 				}
 				if (coords.size() != 3)
@@ -58,6 +59,8 @@ ObjectFile ObjectFileReader::parseObjFile(std::string pathToObjectFile)
 						{							
 							objectFile.addTriangleVertex(_vertices[indexes[i]-1]);
 						}
+
+						objectFile.addFace(glm::vec3(indexes[0], indexes[1], indexes[2]));
 					}
 					
 				}
