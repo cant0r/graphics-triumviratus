@@ -60,7 +60,7 @@ ObjectFile ObjectFileReader::parseObjFile(std::string pathToObjectFile)
 							objectFile.addTriangleVertex(_vertices[indexes[i]-1]);
 						}
 
-						objectFile.addFace(glm::vec3(indexes[0], indexes[1], indexes[2]));
+						objectFile.addFace(glm::ivec3(indexes[0]-1, indexes[1]-1, indexes[2]-1));
 					}
 					
 				}

@@ -7,6 +7,7 @@
 #include <string>
 #include "ObjectFile.h"
 #include "ObjectFileReader.h"
+#include "WEMesh.h"
 
 #define		numVBOs			2
 #define		numVAOs			1
@@ -323,11 +324,14 @@ int main(int argc, char** argv)
 	std::vector<glm::vec3> rawVertexes = objFile.getRawVertexes();
 	readVertexEntries = rawVertexes.size();
 	
-	std::vector<glm::vec3> faces = objFile.getFaces();
+	std::vector<glm::ivec3> faces = objFile.getFaces();
 	readFaceEntries = faces.size();
 
 	std::cout << "Read vertexes: " << readVertexEntries << std::endl;
 	std::cout << "Read faces: " << readFaceEntries << std::endl;
+
+	WEMesh mesh;
+	mesh.loadModel(rawVertexes, faces);
 
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
@@ -361,6 +365,6 @@ int main(int argc, char** argv)
 	}
 
 	cleanUpScene();
-
+	
 	return EXIT_SUCCESS;
 }

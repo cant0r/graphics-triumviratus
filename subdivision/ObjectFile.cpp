@@ -20,12 +20,12 @@ std::vector<glm::vec3> ObjectFile::getRawVertexes()
 	return this->_rawVertexes;
 }
 
-void ObjectFile::addFace(glm::vec3 face)
+void ObjectFile::addFace(glm::ivec3 face)
 {
 	this->_rawFaces.push_back(face);
 }
 
-std::vector<glm::vec3> ObjectFile::getFaces()
+std::vector<glm::ivec3> ObjectFile::getFaces()
 {
 	return this->_rawFaces;
 }

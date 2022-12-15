@@ -139,6 +139,7 @@
     <ClCompile Include="ObjectFile.cpp" />
     <ClCompile Include="ObjectFileReader.cpp" />
     <ClCompile Include="Vertex.cpp" />
+    <ClCompile Include="WEMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\OpenGLTemplate\glew32.dll">
@@ -159,6 +160,7 @@
     <ClInclude Include="ObjectFile.h" />
     <ClInclude Include="ObjectFileReader.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="WEMesh.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
