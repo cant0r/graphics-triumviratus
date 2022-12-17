@@ -8,6 +8,7 @@
 #include "ObjectFile.h"
 #include "ObjectFileReader.h"
 #include "WEMesh.h"
+#include "LoopSubdivision.h"
 
 #define		numVBOs			2
 #define		numVAOs			1
@@ -45,7 +46,9 @@ cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f),
 cameraUpVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
 std::vector<glm::vec3> object_colors, object_point_colors;
+WEMesh		initial_we, actual_we, next_we;
 
+std::vector<glm::vec3> vertexes;
 
 bool checkOpenGLError() 
 {
@@ -210,6 +213,9 @@ void init(GLFWwindow* window, std::vector<glm::vec3>& coords)
 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 	invTMatrixLoc = glGetUniformLocation(renderingProgram, "invTMatrix");
 
+	actual_we = initial_we;
+	next_we = initial_we;
+
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 }
 
@@ -243,6 +249,41 @@ void display(GLFWwindow* window, double currentTime)
 		angle -= 1.0f;
 		cameraPos[0] = cameraRange * glm::sin(glm::radians(angle));
 		cameraPos[2] = cameraRange * glm::cos(glm::radians(angle));
+	}
+
+	if ((keyboard[GLFW_KEY_K])) 
+	{
+		LoopSubdivision ls;
+		ls.loopSubdivision(&next_we, &actual_we, true, true);
+		//LoopSubdivision::loopSubdivision(&next_we, &actual_we, false, true);
+
+		actual_we = next_we;
+		readEntries = next_we.getVertexCount();
+		std::vector<glm::vec3> new_vertices(readEntries);
+
+		for (int i = 0; i < readEntries; i++) {
+			new_vertices[i] = next_we.getVertices()[i].getPosition();
+		}
+		vertexes = new_vertices;
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+		glBufferData(GL_ARRAY_BUFFER, vertexes.size() * sizeof(glm::vec3), vertexes.data(), GL_STATIC_DRAW);
+	}
+
+
+	if ((keyboard[GLFW_KEY_R]))
+	{
+		actual_we = initial_we;
+		readEntries = initial_we.getVertexCount();
+		std::vector<glm::vec3> new_vertices(readEntries);
+
+		for (int i = 0; i < readEntries; i++) {
+			new_vertices[i] = initial_we.getVertices()[i].getPosition();
+		}
+		vertexes = new_vertices;
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+		glBufferData(GL_ARRAY_BUFFER, vertexes.size() * sizeof(glm::vec3), vertexes.data(), GL_STATIC_DRAW);
 	}
 
 	glUseProgram(renderingProgram);
@@ -330,8 +371,18 @@ int main(int argc, char** argv)
 	std::cout << "Read vertexes: " << readVertexEntries << std::endl;
 	std::cout << "Read faces: " << readFaceEntries << std::endl;
 
-	WEMesh mesh;
-	mesh.loadModel(rawVertexes, faces);
+	initial_we.loadModel(rawVertexes, faces);
+
+	/*auto edges = initial_we.getEdges();
+
+	for (int i = 0; i < initial_we.getEdgeCount(); i++)
+	{
+		std::cout << "Edge origin" << edges[i].vertOrigin << std::endl;
+		std::cout << "Left edge CW origin" << edges[i].edgeLeftCW->vertOrigin << std::endl;
+		std::cout << "Left edge CCW origin" << edges[i].edgeLeftCCW->vertOrigin << std::endl;
+		std::cout << "====================" << std::endl;
+		std::cout << std::endl;
+	}*/
 
 	if (!glfwInit())
 		exit(EXIT_FAILURE);

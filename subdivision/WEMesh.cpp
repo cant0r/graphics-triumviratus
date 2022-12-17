@@ -45,13 +45,13 @@ bool WEMesh::loadModel(std::vector<glm::vec3>& vertices, std::vector<glm::ivec3>
 
 	vertexCount = vertices.size();
 	faceCount = faces.size();
-	edgeCount = faceCount * 2 + 1;
+	edgeCount = faceCount + 6;
 
 	this->vertices = new Vertex[vertexCount];
 	this->edges = new Edge[edgeCount];
 	this->faces = new Face[faceCount];
 
-	// Used to locate an edge using a vertex pair. Think of this as a hash map
+	// Used to locate an edge using a vertex pair.
 	Edge*** vertexPairEdgeArray = new Edge**[vertexCount];
 	for (int i = 0; i < vertexCount; i++) 
 	{
