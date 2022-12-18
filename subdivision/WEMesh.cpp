@@ -45,7 +45,7 @@ bool WEMesh::loadModel(std::vector<glm::vec3>& vertices, std::vector<glm::ivec3>
 
 	vertexCount = vertices.size();
 	faceCount = faces.size();
-	edgeCount = faceCount + 6;
+	edgeCount = faceCount * 3 / 2;
 
 	this->vertices = new Vertex[vertexCount];
 	this->edges = new Edge[edgeCount];
@@ -152,7 +152,7 @@ bool WEMesh::loadModel(std::vector<glm::vec3>& vertices, std::vector<glm::ivec3>
 	}
 	std::cout << std::endl << "Winged Edge Populated" << std::endl;
 	std::cout << "Winged Edge: Actual Edge Count: " << edgeCountIterator << std::endl;
-	std::cout << "Winged Edge: Expected Edge Count (Face Count * 2 + 1): " << faceCount * 2 + 1 << std::endl;
+	std::cout << "Winged Edge: Expected Edge Count (Face Count * 3 / 2): " << faceCount * 3 / 2 << std::endl;
 
 	for (int i = 0; i < vertexCount; i++)
 	{
